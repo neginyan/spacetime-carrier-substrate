@@ -1,3 +1,11 @@
+# The Spacetime Carrier Substrate: Bandlimited Information, Regular Geometry, and a Gravitational Heisenberg Cut
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22962657.svg)](https://doi.org/10.5281/zenodo.22962657)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+Numerical verification suite and symbolic derivations for the paper **"The Spacetime Carrier Substrate"**.
+
+---
 # The Spacetime Carrier Substrate — Verification Code
 
 Numerical verification of the equations in
