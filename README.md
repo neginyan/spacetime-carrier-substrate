@@ -102,8 +102,8 @@ results/verification_output.txt  full output of run_all.py
 ## Citation
 
 ```bibtex
-@article{taishi_carrier_substrate,
-  author  = {taishi, Namba},
+@article{namba_carrier_substrate,
+  author  = {Namba, Taishi},
   title   = {The Spacetime Carrier Substrate: Unifying Quantum Measurement,
              Regular Geometry, and Holographic Entropy via Bandlimited Information},
   note    = {Submitted to Classical and Quantum Gravity},
