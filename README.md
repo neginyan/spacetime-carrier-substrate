@@ -20,7 +20,7 @@ python verification/run_all.py
 
 ```
   OK     12/12   Section 2  Carrier window sampling (Eqs. 2.2-2.19)
-  OK     25/25   Section 3  Dissipative duality and Krein embedding (Eqs. 3.4-3.42)
+  OK     25/25   Section 3  Dissipative duality and Krein embedding (Eqs. 3.4-3.39)
   OK     30/30   Sections 4 & 6  Regular geometry, curvature and energy conditions
   OK     15/15   Section 5  Information geometry, volume deficit and counting
   OK     20/20   Section 7  Gravitational back-reaction and the Heisenberg cut
@@ -42,7 +42,7 @@ Requirements: Python ≥ 3.10, NumPy, SciPy and Matplotlib (figures only).
 | Script | Paper | Independent method | Main results confirmed |
 |---|---|---|---|
 | `sec2_window_sampling.py` | §2, Eqs. (2.2)–(2.19) | direct numerical integration of the window readout (2.8) | readout of a pure state is **rank one**; closed form (2.17); coherence at the branch nodes independent of $d_0$; only a trans-Planckian momentum filter; weights $\lvert c_k\rvert^2$ |
-| `sec3_krein_duality.py` | §3, Eqs. (3.4)–(3.42) | brute-force null space of $\eta K + K^T\eta = 0$; phase-space grid model of Eq. (3.8) | Lemma 2 bound $\mathrm{Re}\,\lambda \le -c_\Delta D_\sigma$; $P = R = 0$ for **every** solution; split signature $(N,N)$; pseudo-unitarity; $\{C,K\} = 0$; capacity ratio $1/2$; $\Theta K\Theta^{-1}$ keeps the contractive spectrum (Eq. 3.16); Remark 2 identity and bound |
+| `sec3_krein_duality.py` | §3, Eqs. (3.4)–(3.39) | brute-force null space of $\eta K + K^T\eta = 0$; phase-space grid model of Eq. (3.8) | Lemma 2 bound $\mathrm{Re}\,\lambda \le -c_\Delta D_\sigma$; $P = R = 0$ for **every** solution; split signature $(N,N)$; pseudo-unitarity; $\{C,K\} = 0$; capacity ratio $1/2$; $\Theta K\Theta^{-1}$ keeps the contractive spectrum (Eq. 3.16); Remark 2 identity and bound |
 | `sec4_6_regular_geometry.py` | §4, §6 | Riemann tensor from the metric by finite differences; quadrature | $U_{\rm self} = -\tfrac{3\pi}{32}GM^2/b_0$; $M_{\rm hor} = \tfrac{3\sqrt3}{4}b_0c^2/G$; $R(r)$ (4.38); $K(0)$; Gauss–Bonnet; $\rho, p_r, p_t$ from $G^\mu{}_\nu$; NEC everywhere; SEC violated for $r < \sqrt{2/3}\,b_0$; Gaussian-kernel threshold $\approx 0.95\,\sigma_0c^2/G$ |
 | `sec5_information_geometry.py` | §5 | Gauss–Hermite quadrature; exact geodesic-ball volumes on $S^n$, $H^n$ | Fisher metric $\delta_{\mu\nu}/\sigma_0^2$; Bhattacharyya overlap; deficit coefficient $R/(6(n+2))$ = $R/36$ in 4D; $\lambda_{\rm joint} = 1/4$; the role of assumption (A3) |
 | `sec7_heisenberg_cut.py` | §7 | radial quadrature **and** 6D Monte Carlo of Eq. (7.6) | $\sigma_{\rm eff}^2 = 2\sigma^2 + \sigma_0^2$ (and $+4s_m^2$ for extended bodies); saturation (7.12); $\tau$ (7.13); $\Delta S = 2Gm^2/c$ independent of $\sigma_{\rm eff}$; small-$\xi$ limit (7.16); $m_H = M_P/\sqrt2 = 15.39\ \mu$g; Fisher–Bhattacharyya correspondence (7.23) |
