@@ -1,6 +1,6 @@
 """Section 3 -- Gaussian dissipative duality and the Krein embedding.
 
-Two finite-dimensional models are used (Assumption 1 works in a
+Two finite-dimensional models are used (Section 3 works in a
 finite-dimensional regularization):
 
 (a) a random real Hurwitz generator A with real and complex-conjugate
@@ -13,14 +13,17 @@ Checks:
 * Eqs. (3.4), (3.6): Theta L Theta^{-1} = -L, also after coarse-graining.
 * Eq. (3.16): Theta K Theta^{-1} = -L_sigma + D Delta has the SAME
   (contractive) spectrum as K, so the Theta image is not the mirror sector.
-* Assumption 1 in model (b): simple zero mode (normalisation) and strictly
-  negative real parts on the normalisation-preserving subspace.
-* Theorem 1 (Eqs. 3.17-3.22): every symmetric solution eta of
+* Lemma 2 (Eqs. 3.17-3.22) in model (b): simple zero mode and
+  Re lambda <= -c_Delta D on the zero-mean subspace H0. The proof goes
+  through the similarity A_sigma = P (L + D Delta) P^{-1}: L_sigma itself
+  is NOT skew-adjoint, so the bound cannot be read off A_sigma directly.
+* Theorem 1 (Eqs. 3.23-3.28): every symmetric solution eta of
   eta K + K^T eta = 0 has P = R = 0 (brute-force null space).
-* Eqs. (3.23)-(3.24): the explicit Q for an oscillatory Jordan block.
-* Eq. (3.25): eta = [[0,Q],[Q,0]] has split signature (N,N) and
+* Eqs. (3.26), (3.29)-(3.30): symmetric solutions Q of A^T Q = Q A, including
+  the oscillatory block and a non-diagonalisable (Jordan) block.
+* Eq. (3.31): eta = [[0,Q],[Q,0]] has split signature (N,N) and
   U(t)^T eta U(t) = eta (pseudo-unitarity).
-* Eqs. (3.26)-(3.36): {C, K} = 0 and Tr(Pi_causal)/N_flow = 1/2.
+* Eqs. (3.32)-(3.42): {C, K} = 0 and Tr(Pi_causal)/N_flow = 1/2.
 * Remark 2 (Eq. 3.14): for V = 0, P L P^{-1} = L + sigma^2 d_q d_p, the
   entropy term Sigma = sigma^2 int d_q rho d_p rho / rho, and the bound
   |Sigma| <= (sigma^2/2) I_Fisher.
@@ -29,7 +32,7 @@ Checks:
 from __future__ import annotations
 
 import numpy as np
-from scipy.linalg import expm, null_space
+from scipy.linalg import eigvalsh, expm, null_space
 from scipy.optimize import linear_sum_assignment
 
 from common import Report
@@ -105,7 +108,7 @@ def grid_model(n=10, L=6.0, sigma=0.4, D=0.3):
 
 
 def run() -> Report:
-    rep = Report("Section 3  Dissipative duality and Krein embedding (Eqs. 3.4-3.36)")
+    rep = Report("Section 3  Dissipative duality and Krein embedding (Eqs. 3.4-3.42)")
 
     # ---------------- Model (b): time reversal and Assumption 1 ---------------
     m = grid_model()
@@ -123,14 +126,23 @@ def run() -> Report:
               f"max Re spec(K) = {np.max(ev_K.real):.1e},  max Re spec(-K) = {np.max((-ev_K).real):.3f}")
 
     ones = np.ones(K.shape[0]) / np.sqrt(K.shape[0])
-    rep.close("Assumption 1: probability conservation, 1^T K = 0 (left zero mode)",
+    rep.close("Lemma 2: probability conservation, 1^T K = 0 (left zero mode)",
               ones @ K, np.zeros(K.shape[0]), atol=1e-10)
-    B = null_space(ones[None, :])                  # normalisation-preserving subspace
+    B = null_space(ones[None, :])                  # zero-mean subspace H0
     A_b = B.T @ K @ B
     ev_A = np.linalg.eigvals(A_b)
-    rep.check("Assumption 1: K restricted to the normalisation-preserving subspace is Hurwitz",
-              np.max(ev_A.real) < 0,
-              f"max Re lambda = {np.max(ev_A.real):.4f} (N = {A_b.shape[0]})")
+    D = 0.3
+    c_gap = -np.max(eigvalsh(B.T @ Lap @ B))      # spectral gap of -Delta on H0
+    rep.check("Lemma 2, Eq. (3.22): Re lambda <= -c_Delta D_sigma < 0 on H0",
+              np.max(ev_A.real) <= -c_gap * D + 1e-10,
+              f"max Re lambda = {np.max(ev_A.real):.4f} <= -c_Delta D = {-c_gap * D:.4f} (N = {A_b.shape[0]})")
+    rep.close("Lemma 2 proof: A_sigma = P (L + D Delta) P^{-1} (similarity, since [P, Delta] = 0)",
+              K, m["P"] @ (L + D * Lap) @ np.linalg.inv(m["P"]), rtol=0, atol=1e-9 * np.max(abs(K)))
+    sym = np.linalg.norm(Ls + Ls.T) / np.linalg.norm(Ls)
+    top = np.max(eigvalsh(0.5 * (A_b + A_b.T)))
+    rep.check("Lemma 2 proof: L_sigma is NOT skew-adjoint, so the bound must be taken on L + D Delta",
+              sym > 0.1 and top > 0,
+              f"|L_s + L_s^T|/|L_s| = {sym:.2f}; the symmetric part of A_sigma on H0 has eigenvalue {top:+.3f}")
 
     # ---------------- Theorem 1 on model (a): brute force ---------------------
     A = random_hurwitz()
@@ -144,22 +156,27 @@ def run() -> Report:
               f"{len(sols)} independent solutions, max |P|+|R| = {diag_norm:.1e}")
     lam = np.linalg.eigvals(A)
     pair_min = np.min(abs(lam[:, None] + lam[None, :]))
-    rep.check("Eq. (3.21) no pairwise sum lambda_i + lambda_j vanishes (Lyapunov operator invertible)",
+    rep.check("Eq. (3.27) no pairwise sum lambda_i + lambda_j vanishes (Lyapunov operator invertible)",
               pair_min > 1e-3, f"min |lambda_i + lambda_j| = {pair_min:.3f}")
 
     Q = spectral_Q(A)
-    rep.close("Eq. (3.20) spectral solution Q = S^{-T}S^{-1} satisfies A^T Q = Q A", A.T @ Q, Q @ A, atol=1e-9)
+    rep.close("Eq. (3.26) spectral solution Q = S^{-T}S^{-1} satisfies A^T Q = Q A", A.T @ Q, Q @ A, atol=1e-9)
     rep.close("... and Q is real symmetric", Q, Q.T, atol=1e-10)
     Ablk = np.array([[-0.7, 1.9], [-1.9, -0.7]])
     Qblk = np.diag([1.0, -1.0])
-    rep.close("Eqs. (3.23)-(3.24) Jordan block: A_block^T Q_block = Q_block A_block",
+    rep.close("Eqs. (3.29)-(3.30) oscillatory block: A_block^T Q_block = Q_block A_block",
               Ablk.T @ Qblk, Qblk @ Ablk, atol=1e-15)
+    J = np.array([[-0.8, 1.0], [0.0, -0.8]])      # non-diagonalisable block
+    S_J = np.array([[0.0, 1.0], [1.0, 0.0]])
+    rep.check("Non-diagonalisable A: a symmetric nonsingular Q with A^T Q = Q A still exists (Taussky-Zassenhaus)",
+              np.allclose(J.T @ S_J, S_J @ J) and abs(np.linalg.det(S_J)) > 0,
+              "Jordan block [[-0.8, 1], [0, -0.8]] with Q = [[0, 1], [1, 0]]")
 
     eta = np.block([[Z, Q], [Q, Z]])
-    rep.close("Eq. (3.17) eta = [[0,Q],[Q,0]] satisfies eta K + K^T eta = 0",
+    rep.close("Eq. (3.23) eta = [[0,Q],[Q,0]] satisfies eta K + K^T eta = 0",
               eta @ K2 + K2.T @ eta, np.zeros_like(eta), atol=1e-9)
     w = np.linalg.eigvalsh(eta)
-    rep.check("Eq. (3.25) signature of eta is split (N, N)",
+    rep.check("Eq. (3.31) signature of eta is split (N, N)",
               (np.sum(w > 1e-9), np.sum(w < -1e-9)) == (N, N),
               f"(n+, n-) = ({np.sum(w > 1e-9)}, {np.sum(w < -1e-9)}), N = {N}")
     errs = [np.max(abs(expm(t * K2).T @ eta @ expm(t * K2) - eta)) / np.max(abs(eta)) for t in (0.3, 1.0, 2.5)]
@@ -179,12 +196,12 @@ def run() -> Report:
     # ---------------- Chiral grading and the 1/2 capacity ---------------------
     I = np.eye(N)
     Cs = np.block([[Z, I], [I, Z]])
-    rep.close("Eq. (3.27) C^2 = I", Cs @ Cs, np.eye(2 * N), atol=0)
-    rep.close("Eq. (3.29) {C, K} = 0", Cs @ K2 + K2 @ Cs, np.zeros_like(K2), atol=1e-12)
+    rep.close("Eq. (3.33) C^2 = I", Cs @ Cs, np.eye(2 * N), atol=0)
+    rep.close("Eq. (3.35) {C, K} = 0", Cs @ K2 + K2 @ Cs, np.zeros_like(K2), atol=1e-12)
     for label, KK in (("random model", K2), ("grid model", K2b)):
         ev = np.linalg.eigvals(KK)
         ratio = np.sum(ev.real < 0) / KK.shape[0]
-        rep.close(f"Eq. (3.31) Tr(Pi_causal)/N_flow = 1/2 ({label})", ratio, 0.5, rtol=0)
+        rep.close(f"Eq. (3.37) Tr(Pi_causal)/N_flow = 1/2 ({label})", ratio, 0.5, rtol=0)
 
     # ---------------- Remark 2 (free particle) --------------------------------
     rep.rows.extend(remark2_checks().rows)
