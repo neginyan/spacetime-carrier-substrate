@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23040465.svg)](https://doi.org/10.5281/zenodo.23040465)
 # The Spacetime Carrier Substrate: Bandlimited Information, Regular Geometry, and a Gravitational Heisenberg Cut
 
 Numerical verification suite for the paper
