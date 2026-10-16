@@ -5,7 +5,6 @@ Numerical verification suite for the paper
 
 > T. Namba, *The Spacetime Carrier Substrate: Bandlimited Information,
 > Regular Geometry, and a Gravitational Heisenberg Cut*
-> (submitted to *Classical and Quantum Gravity*).
 
 Every script re-derives a result of the paper **independently** and compares
 it with the equation printed in the manuscript. It does not copy the paper's
@@ -107,7 +106,6 @@ results/verification_output.txt  full output of run_all.py
   author  = {Namba, Taishi},
   title   = {The Spacetime Carrier Substrate: Bandlimited Information,
              Regular Geometry, and a Gravitational Heisenberg Cut},
-  note    = {Submitted to Classical and Quantum Gravity},
   year    = {2026}
 }
 ```
