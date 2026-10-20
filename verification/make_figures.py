@@ -3,7 +3,7 @@
 Fig. 1  Window sampling preserves inter-branch coherence (Section 2).
 Fig. 2  Saturation of the gravitational action difference (Eqs. 7.9-7.16),
         with the Bild et al. (2023) operating point.
-Fig. 3  Coherence factor exp(-2Gm^2/hbar c) in the saturated regime (Eq. 7.25).
+Fig. 3  Coherence factor exp(-2Gm^2/hbar c) in the saturated regime (Eq. 7.26).
 """
 
 from __future__ import annotations
@@ -63,7 +63,7 @@ def fig_saturation():
     fig, ax = plt.subplots(figsize=(7.2, 4.2))
     ax.plot(x, ratio, color=BLUE, label="$\\Delta S(\\xi)/\\Delta S_{\\rm sat}$, Eqs. (7.9), (7.13)")
     ax.plot(x[x < 1], x[x < 1] ** 2 / 3, color=INK2, linestyle=":", linewidth=1.5,
-            label="Small-separation limit $(\\xi/\\sigma_{\\rm eff})^2/3$, Eq. (7.16)")
+            label="Small-separation limit $(\\xi/\\sigma_{\\rm eff})^2/3$, Eq. (7.17)")
     x_bild = 2.1e-18 / (2 * 27e-6)
     ax.plot([x_bild], [x_bild**2 / 3], "o", color=BLUE, markersize=8,
             markeredgecolor=SURFACE, markeredgewidth=2)
@@ -99,7 +99,7 @@ def fig_threshold():
     ax.set_ylim(0, 1.05)
     ax.set_xlabel("Mass $m$ (µg)")
     ax.set_ylabel("Coherence factor $\\exp(-2Gm^2/\\hbar c)$")
-    ax.set_title("Heisenberg cut in the saturated regime, Eqs. (7.19), (7.25)", loc="left",
+    ax.set_title("Heisenberg cut in the saturated regime, Eqs. (7.20), (7.26)", loc="left",
                  fontweight="bold")
     fig.tight_layout()
     fig.savefig(OUT / "fig3_heisenberg_cut.png", dpi=160)

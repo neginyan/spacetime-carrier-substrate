@@ -14,6 +14,7 @@ import sec4_6_regular_geometry
 import sec5_information_geometry
 import sec7_heisenberg_cut
 import sec8_observables
+import revision_results
 
 MODULES = [
     sec2_window_sampling,
@@ -22,6 +23,7 @@ MODULES = [
     sec5_information_geometry,
     sec7_heisenberg_cut,
     sec8_observables,
+    revision_results,
 ]
 
 

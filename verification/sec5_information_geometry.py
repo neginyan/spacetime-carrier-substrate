@@ -3,11 +3,11 @@
 Checks:
 * Eq. (5.5): the Fisher metric of the 4D Gaussian location family is
   delta_mu_nu / sigma0^2 (Gauss-Hermite quadrature).
-* Eq. (5.7): Bhattacharyya coefficient exp(-|dtheta|^2 / 8 sigma0^2).
-* Eq. (5.9)-(5.10): geodesic-ball volume deficit R eps^2 / (6(n+2)), i.e.
+* Eq. (5.8): Bhattacharyya coefficient exp(-|dtheta|^2 / 8 sigma0^2).
+* Eq. (5.10)-(5.11): geodesic-ball volume deficit R eps^2 / (6(n+2)), i.e.
   R/36 in four dimensions, tested on spheres and hyperbolic spaces of
   dimensions 2, 3, 4 (exact ball volumes).
-* Eqs. (5.18)-(5.24): lambda_time = 1/2 (spectral projector of the doubled
+* Eqs. (5.25)-(5.30): lambda_time = 1/2 (spectral projector of the doubled
   generator), lambda_space = 1/2 (chiral projector (1 + gamma5)/2 with the
   Dirac matrices), lambda_joint = 1/4 on the tensor product.
 * Remark 5: projecting the full N-cell Hilbert space by Pi_joint lowers the
@@ -75,7 +75,7 @@ def run() -> Report:
     rep.close("Eq. (5.5) Fisher metric = delta_mu_nu / sigma0^2", g, np.eye(4) / SIGMA0**2, rtol=1e-10, atol=1e-12)
     for dth in ([0.3, 0, 0, 0], [0.5, -0.2, 0.9, 0.1]):
         dth = np.array(dth)
-        rep.close(f"Eq. (5.7) Bhattacharyya = exp(-|dtheta|^2/8 sigma0^2), |dtheta| = {np.linalg.norm(dth):.3f}",
+        rep.close(f"Eq. (5.8) Bhattacharyya = exp(-|dtheta|^2/8 sigma0^2), |dtheta| = {np.linalg.norm(dth):.3f}",
                   bhattacharyya(dth), np.exp(-dth @ dth / (8 * SIGMA0**2)), rtol=1e-10)
 
     # Volume deficit coefficient: (1 - V/V_flat)/eps^2 -> R/(6(n+2))
@@ -85,9 +85,9 @@ def run() -> Report:
             eps = np.array([0.04, 0.02])
             coef = np.array([ball_volume_deficit(n, e, sgn) for e in eps]) / eps**2
             coef0 = (4 * coef[1] - coef[0]) / 3       # remove the O(eps^2) term
-            rep.close(f"Eq. (5.9) deficit coefficient R/(6(n+2)) on {name}^{n}",
+            rep.close(f"Eq. (5.10) deficit coefficient R/(6(n+2)) on {name}^{n}",
                       coef0, R / (6 * (n + 2)), rtol=1e-6)
-    rep.close("Eq. (5.10) four-dimensional coefficient 1/(6(4+2)) = 1/36", 1 / (6 * (4 + 2)), 1 / 36, rtol=0)
+    rep.close("Eq. (5.11) four-dimensional coefficient 1/(6(4+2)) = 1/36", 1 / (6 * (4 + 2)), 1 / 36, rtol=0)
 
     # lambda_time, lambda_space, lambda_joint
     rng = np.random.default_rng(7)
@@ -97,13 +97,13 @@ def run() -> Report:
     Kd = np.block([[A, np.zeros((N, N))], [np.zeros((N, N)), -A]])
     lam, V = np.linalg.eig(Kd)
     Pi_time = (V @ np.diag((lam.real < 0).astype(float)) @ np.linalg.inv(V)).real   # (1 - sgn Re K)/2
-    rep.close("Eq. (5.19) lambda_time = Tr(Pi_time)/dim = 1/2", np.trace(Pi_time) / (2 * N), 0.5, rtol=1e-12)
+    rep.close("Eq. (5.25) lambda_time = Tr(Pi_time)/dim = 1/2", np.trace(Pi_time) / (2 * N), 0.5, rtol=1e-12)
     g5 = dirac_gamma5()
     rep.close("gamma5^2 = 1 (Dirac representation)", g5 @ g5, np.eye(4), atol=1e-14)
     Pi_space = (np.eye(4) + g5) / 2
-    rep.close("Eq. (5.22) lambda_space = Tr((1 + gamma5)/2)/4 = 1/2", np.trace(Pi_space).real / 4, 0.5, rtol=1e-14)
+    rep.close("Eq. (5.28) lambda_space = Tr((1 + gamma5)/2)/4 = 1/2", np.trace(Pi_space).real / 4, 0.5, rtol=1e-14)
     Pi_joint = np.kron(Pi_time, Pi_space)
-    rep.close("Eq. (5.24) lambda_joint = Tr(Pi_time x Pi_space)/dim = 1/4",
+    rep.close("Eq. (5.30) lambda_joint = Tr(Pi_time x Pi_space)/dim = 1/4",
               np.trace(Pi_joint).real / Pi_joint.shape[0], 0.25, rtol=1e-12)
 
     # Remark 5: the content of assumption (A3)

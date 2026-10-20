@@ -2,7 +2,7 @@
 
 Checks:
 * Item 1: the Bild et al. (2023) 16.2-microgram acoustic cat state lies deep
-  in the non-saturated regime of Eq. (7.16): Delta S/hbar ~ 1e-27.
+  in the non-saturated regime of Eq. (7.17): Delta S/hbar ~ 1e-27.
 * Item 2, Eq. (8.4): echo delay 8 G M/c^3 ln(M/M_P) + O(G M/c^3), about
   0.1 s for 30 solar masses (exact Schwarzschild tortoise coordinate), and
   the proper-distance relation used to place the reflecting boundary.
@@ -42,8 +42,8 @@ def run() -> Report:
     xi = 2.1e-18                   # cat-state delocalisation [m]
     values = []
     for s_m in (10e-6, 27e-6, 100e-6):              # internal extent of the mode (waist 27 um)
-        s_eff = np.sqrt(4 * s_m**2 + L_P**2)         # Eq. (7.15); wavefunction width negligible
-        values.append(2 * G * m**2 / (3 * HBAR * C) * (xi / s_eff) ** 2)   # Eq. (7.16)
+        s_eff = np.sqrt(4 * s_m**2 + L_P**2)         # Eq. (7.16); wavefunction width negligible
+        values.append(2 * G * m**2 / (3 * HBAR * C) * (xi / s_eff) ** 2)   # Eq. (7.17)
     rep.check("Item 1: Bild et al. (16.2 ug, xi = 2.1e-18 m): Delta S/hbar ~ 1e-27 (negligible suppression)",
               all(1e-29 < v < 1e-25 for v in values),
               "Delta S/hbar = " + ", ".join(f"{v:.1e}" for v in values) + "  for s_m = 10, 27, 100 um")

@@ -17,13 +17,13 @@ Checks:
   Re lambda <= -c_Delta D on the zero-mean subspace H0. The proof goes
   through the similarity A_sigma = P (L + D Delta) P^{-1}: L_sigma itself
   is NOT skew-adjoint, so the bound cannot be read off A_sigma directly.
-* Theorem 1 (Eqs. 3.20-3.25): every symmetric solution eta of
+* Theorem 1(a) (Eqs. 3.20-3.22): every symmetric solution eta of
   eta K + K^T eta = 0 has P = R = 0 (brute-force null space).
-* Eqs. (3.23), (3.26)-(3.27): symmetric solutions Q of A^T Q = Q A, including
+* Eq. (3.23), Theorem 1(b): symmetric solutions Q of A^T Q = Q A, including
   the oscillatory block and a non-diagonalisable (Jordan) block.
-* Eq. (3.28): eta = [[0,Q],[Q,0]] has split signature (N,N) and
+* Theorem 1(d): eta = [[0,Q],[Q,0]] has split signature (N,N) and
   U(t)^T eta U(t) = eta (pseudo-unitarity).
-* Eqs. (3.29)-(3.39): {C, K} = 0 and Tr(Pi_causal)/N_flow = 1/2.
+* Eqs. (3.27)-(3.30), Corollary 1: {C, K} = 0 and Tr(Pi_causal)/N_flow = 1/2.
 * Remark 2 (Eq. 3.14): for V = 0, P L P^{-1} = L + sigma^2 d_q d_p, the
   entropy term Sigma = sigma^2 int d_q rho d_p rho / rho, and the bound
   |Sigma| <= (sigma^2/2) I_Fisher.
@@ -108,7 +108,7 @@ def grid_model(n=10, L=6.0, sigma=0.4, D=0.3):
 
 
 def run() -> Report:
-    rep = Report("Section 3  Dissipative duality and Krein embedding (Eqs. 3.4-3.39)")
+    rep = Report("Section 3  Dissipative duality and Krein embedding (Eqs. 3.4-3.30)")
 
     # ---------------- Model (b): time reversal and Assumption 1 ---------------
     m = grid_model()
@@ -151,12 +151,12 @@ def run() -> Report:
     K2 = np.block([[A, Z], [Z, -A]])
     sols = krein_solutions(K2)
     diag_norm = max(np.linalg.norm(E[:N, :N]) + np.linalg.norm(E[N:, N:]) for E in sols)
-    rep.check("Theorem 1, Eq. (3.25): every symmetric eta with eta K + K^T eta = 0 has P = R = 0 (brute-force null space)",
+    rep.check("Theorem 1(a): every symmetric eta with eta K + K^T eta = 0 has P = R = 0 (brute-force null space)",
               diag_norm < 1e-10,
               f"{len(sols)} independent solutions, max |P|+|R| = {diag_norm:.1e}")
     lam = np.linalg.eigvals(A)
     pair_min = np.min(abs(lam[:, None] + lam[None, :]))
-    rep.check("Eq. (3.24) no pairwise sum lambda_i + lambda_j vanishes (Lyapunov operator invertible)",
+    rep.check("Theorem 1(a), proof: no pairwise sum lambda_i + lambda_j vanishes (Lyapunov operator invertible)",
               pair_min > 1e-3, f"min |lambda_i + lambda_j| = {pair_min:.3f}")
 
     Q = spectral_Q(A)
@@ -164,7 +164,7 @@ def run() -> Report:
     rep.close("... and Q is real symmetric", Q, Q.T, atol=1e-10)
     Ablk = np.array([[-0.7, 1.9], [-1.9, -0.7]])
     Qblk = np.diag([1.0, -1.0])
-    rep.close("Eqs. (3.26)-(3.27) oscillatory block: A_block^T Q_block = Q_block A_block",
+    rep.close("Theorem 1(b) oscillatory block (cf. Example 1): A_block^T Q_block = Q_block A_block",
               Ablk.T @ Qblk, Qblk @ Ablk, atol=1e-15)
     J = np.array([[-0.8, 1.0], [0.0, -0.8]])      # non-diagonalisable block
     S_J = np.array([[0.0, 1.0], [1.0, 0.0]])
@@ -176,7 +176,7 @@ def run() -> Report:
     rep.close("Eq. (3.20) eta = [[0,Q],[Q,0]] satisfies eta K + K^T eta = 0",
               eta @ K2 + K2.T @ eta, np.zeros_like(eta), atol=1e-9)
     w = np.linalg.eigvalsh(eta)
-    rep.check("Eq. (3.28) signature of eta is split (N, N)",
+    rep.check("Theorem 1(d) signature of eta is split (N, N)",
               (np.sum(w > 1e-9), np.sum(w < -1e-9)) == (N, N),
               f"(n+, n-) = ({np.sum(w > 1e-9)}, {np.sum(w < -1e-9)}), N = {N}")
     errs = [np.max(abs(expm(t * K2).T @ eta @ expm(t * K2) - eta)) / np.max(abs(eta)) for t in (0.3, 1.0, 2.5)]
@@ -196,12 +196,12 @@ def run() -> Report:
     # ---------------- Chiral grading and the 1/2 capacity ---------------------
     I = np.eye(N)
     Cs = np.block([[Z, I], [I, Z]])
-    rep.close("Eq. (3.30) C^2 = I", Cs @ Cs, np.eye(2 * N), atol=0)
-    rep.close("Eq. (3.32) {C, K} = 0", Cs @ K2 + K2 @ Cs, np.zeros_like(K2), atol=1e-12)
+    rep.close("Sec. 3.5 C^2 = I", Cs @ Cs, np.eye(2 * N), atol=0)
+    rep.close("Eq. (3.28) {C, K} = 0", Cs @ K2 + K2 @ Cs, np.zeros_like(K2), atol=1e-12)
     for label, KK in (("random model", K2), ("grid model", K2b)):
         ev = np.linalg.eigvals(KK)
         ratio = np.sum(ev.real < 0) / KK.shape[0]
-        rep.close(f"Eq. (3.34) Tr(Pi_causal)/N_flow = 1/2 ({label})", ratio, 0.5, rtol=0)
+        rep.close(f"Eq. (3.30) Tr(Pi_causal)/N_flow = 1/2 ({label})", ratio, 0.5, rtol=0)
 
     # ---------------- Remark 2 (free particle) --------------------------------
     rep.rows.extend(remark2_checks().rows)
